@@ -84,8 +84,13 @@ export async function setupAuth(app: Express) {
     verified(null, user);
   };
 
-  for (const domain of process.env
-    .REPLIT_DOMAINS!.split(",")) {
+  // Include both Replit domains and custom domains
+  const allDomains = [
+    ...process.env.REPLIT_DOMAINS!.split(","),
+    "gitship.pro"
+  ];
+  
+  for (const domain of allDomains) {
     const strategy = new Strategy(
       {
         name: `replitauth:${domain}`,
