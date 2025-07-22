@@ -84,11 +84,12 @@ export async function setupAuth(app: Express) {
     verified(null, user);
   };
 
-  // Include both Replit domains and custom domains
+  // Include both Replit domains and custom domains, plus localhost for development
   const allDomains = [
     ...process.env.REPLIT_DOMAINS!.split(","),
     "gitship-netheracegame.replit.app",
-    "gitship.pro"
+    "gitship.pro",
+    "localhost"
   ];
   
   for (const domain of allDomains) {
