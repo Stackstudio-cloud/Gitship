@@ -314,7 +314,6 @@ export default function OAuthDemoPage() {
                   variants={cardVariants}
                   whileHover="hover"
                   whileTap="tap"
-                  style={{ originIndex: index }}
                 >
                   <Card className="bg-dark-700 border-dark-600 hover:border-neon-orange/50 transition-all h-full">
                     <CardHeader>
@@ -447,6 +446,7 @@ export default function OAuthDemoPage() {
                     </div>
                   </CardContent>
                 </Card>
+                </motion.div>
               );
             })}
           </motion.div>
@@ -595,6 +595,6 @@ export default function OAuthDemoPage() {
           </Card>
         </div>
       </section>
-    </div>
+    </motion.div>
   );
 }
