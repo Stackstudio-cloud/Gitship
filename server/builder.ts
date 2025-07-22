@@ -94,7 +94,7 @@ export class BuildService {
       throw new Error(`Deployment ${deploymentId} not found`);
     }
 
-    const project = await storage.getProject(deployment.projectId);
+    const project = await storage.getProject(deployment.projectId!);
     if (!project) {
       throw new Error(`Project ${deployment.projectId} not found`);
     }
@@ -109,7 +109,7 @@ export class BuildService {
       });
 
       // Get GitHub access token
-      const user = await storage.getUser(project.userId);
+      const user = await storage.getUser(project.userId!);
       if (!user?.githubAccessToken) {
         throw new Error('GitHub access token not found');
       }
@@ -285,8 +285,8 @@ export class BuildService {
     }
 
     // Get latest commit if not provided
-    if (!commitHash && project.githubAccessToken) {
-      const user = await storage.getUser(project.userId);
+    if (!commitHash) {
+      const user = await storage.getUser(project.userId!);
       if (user?.githubAccessToken) {
         const github = new GitHubService(user.githubAccessToken);
         try {

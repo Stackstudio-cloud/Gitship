@@ -189,7 +189,7 @@ export class GitHubService {
     }
   }
 
-  async getLatestCommit(owner: string, repo: string, branch: string = 'main') {
+  async getLatestCommit(owner: string, repo: string, branch: string = 'main'): Promise<any> {
     try {
       const { data } = await this.octokit.rest.repos.getBranch({
         owner,
@@ -215,55 +215,5 @@ export class GitHubService {
     return Buffer.from(data as ArrayBuffer);
   }
 
-  async downloadRepository(owner: string, repo: string, ref: string = "main") {
-    const { data } = await this.octokit.rest.repos.downloadZipballArchive({
-      owner,
-      repo,
-      ref,
-    });
-    return data;
-  }
 
-  static parseRepositoryUrl(url: string): { owner: string; repo: string } | null {
-    const githubRegex = /github\.com[\/:]([^\/]+)\/([^\/\.]+)/;
-    const match = url.match(githubRegex);
-    
-    if (match) {
-      return {
-        owner: match[1],
-        repo: match[2],
-      };
-    }
-    
-    return null;
-  }
-
-  async detectFramework(owner: string, repo: string): Promise<string | null> {
-    try {
-      const packageJson = await this.getRepositoryContent(owner, repo, "package.json");
-      
-      if (Array.isArray(packageJson) || packageJson.type !== "file") {
-        return null;
-      }
-
-      const content = Buffer.from(packageJson.content, "base64").toString("utf-8");
-      const pkg = JSON.parse(content);
-      
-      const dependencies = { ...pkg.dependencies, ...pkg.devDependencies };
-      
-      if (dependencies.next) return "nextjs";
-      if (dependencies.nuxt) return "nuxt";
-      if (dependencies.astro) return "astro";
-      if (dependencies.svelte || dependencies["@sveltejs/kit"]) return "svelte";
-      if (dependencies.vue) return "vue";
-      if (dependencies.react) return "react";
-      if (dependencies.gatsby) return "gatsby";
-      if (dependencies["@angular/core"]) return "angular";
-      
-      return "static";
-    } catch (error) {
-      // If we can't detect framework, default to static
-      return "static";
-    }
-  }
 }
