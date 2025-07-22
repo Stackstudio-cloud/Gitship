@@ -5,6 +5,7 @@ import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertProjectSchema, insertDeploymentSchema } from "@shared/schema";
 import { GitHubService } from "./github";
+import { gitshipAI } from "./ai";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -335,6 +336,166 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error deleting team secret:", error);
       res.status(500).json({ message: "Failed to delete team secret" });
+    }
+  });
+
+  // Public AI Demo route (no auth required for testing)
+  app.post('/api/ai/demo', async (req: any, res) => {
+    try {
+      // Demo analysis result
+      const demoAnalysis = {
+        issues: [
+          {
+            type: 'performance',
+            severity: 'medium',
+            message: 'Unused lodash import detected in package.json',
+            suggestion: 'Remove lodash dependency or use tree-shaking with lodash-es',
+            file: 'package.json',
+            line: 6
+          },
+          {
+            type: 'bug',
+            severity: 'high',
+            message: 'Missing error handling in async fetch operation',
+            suggestion: 'Add try-catch block or .catch() handler to prevent unhandled promise rejections',
+            file: 'src/App.tsx',
+            line: 8
+          },
+          {
+            type: 'maintainability',
+            severity: 'low',
+            message: 'Using array index as React key',
+            suggestion: 'Use unique identifiers instead of array indices for better performance',
+            file: 'src/App.tsx',
+            line: 15
+          }
+        ],
+        optimizations: [
+          {
+            type: 'bundle-size',
+            description: 'Tree-shake unused React features',
+            impact: 'high',
+            implementation: 'Use React.lazy() for component splitting and import only used hooks'
+          },
+          {
+            type: 'performance',
+            description: 'Implement React.memo for list items',
+            impact: 'medium',
+            implementation: 'Wrap repetitive components with React.memo to prevent unnecessary re-renders'
+          },
+          {
+            type: 'seo',
+            description: 'Add meta tags and structured data',
+            impact: 'high',
+            implementation: 'Use react-helmet-async for dynamic meta tags and JSON-LD structured data'
+          }
+        ],
+        score: 78
+      };
+      
+      // Simulate AI processing time
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      res.json(demoAnalysis);
+    } catch (error) {
+      console.error("Error in demo analysis:", error);
+      res.status(500).json({ message: "Failed to run demo analysis" });
+    }
+  });
+
+  // AI Copilot routes
+  app.post('/api/ai/analyze-code', isAuthenticated, async (req: any, res) => {
+    try {
+      const { codeFiles } = req.body;
+      
+      if (!codeFiles || !Array.isArray(codeFiles)) {
+        return res.status(400).json({ message: "Code files array required" });
+      }
+
+      const analysis = await gitshipAI.analyzeCode(codeFiles);
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing code:", error);
+      res.status(500).json({ message: "Failed to analyze code" });
+    }
+  });
+
+  app.post('/api/ai/optimize-build', isAuthenticated, async (req: any, res) => {
+    try {
+      const { packageJson, framework } = req.body;
+      
+      if (!packageJson) {
+        return res.status(400).json({ message: "package.json content required" });
+      }
+
+      const optimization = await gitshipAI.optimizeBuildConfiguration(packageJson, framework);
+      res.json(optimization);
+    } catch (error) {
+      console.error("Error optimizing build:", error);
+      res.status(500).json({ message: "Failed to optimize build configuration" });
+    }
+  });
+
+  app.post('/api/ai/performance-insights', isAuthenticated, async (req: any, res) => {
+    try {
+      const { metrics, framework } = req.body;
+      
+      if (!metrics || !framework) {
+        return res.status(400).json({ message: "Performance metrics and framework required" });
+      }
+
+      const insights = await gitshipAI.generatePerformanceInsights(metrics, framework);
+      res.json(insights);
+    } catch (error) {
+      console.error("Error generating performance insights:", error);
+      res.status(500).json({ message: "Failed to generate performance insights" });
+    }
+  });
+
+  app.post('/api/ai/debug-build', isAuthenticated, async (req: any, res) => {
+    try {
+      const { errorLog, framework, buildCommand } = req.body;
+      
+      if (!errorLog) {
+        return res.status(400).json({ message: "Error log required" });
+      }
+
+      const debugging = await gitshipAI.debugBuildError(errorLog, { framework, buildCommand });
+      res.json(debugging);
+    } catch (error) {
+      console.error("Error debugging build:", error);
+      res.status(500).json({ message: "Failed to debug build error" });
+    }
+  });
+
+  app.post('/api/ai/generate-docs', isAuthenticated, async (req: any, res) => {
+    try {
+      const { codeFiles, framework } = req.body;
+      
+      if (!codeFiles || !framework) {
+        return res.status(400).json({ message: "Code files and framework required" });
+      }
+
+      const documentation = await gitshipAI.generateProjectDocumentation(codeFiles, framework);
+      res.json({ documentation });
+    } catch (error) {
+      console.error("Error generating documentation:", error);
+      res.status(500).json({ message: "Failed to generate documentation" });
+    }
+  });
+
+  app.post('/api/ai/migration-analysis', isAuthenticated, async (req: any, res) => {
+    try {
+      const { currentFramework, targetFramework, codeFiles } = req.body;
+      
+      if (!currentFramework || !targetFramework || !codeFiles) {
+        return res.status(400).json({ message: "Current framework, target framework, and code files required" });
+      }
+
+      const analysis = await gitshipAI.suggestFrameworkMigration(currentFramework, targetFramework, codeFiles);
+      res.json(analysis);
+    } catch (error) {
+      console.error("Error analyzing migration:", error);
+      res.status(500).json({ message: "Failed to analyze framework migration" });
     }
   });
 
