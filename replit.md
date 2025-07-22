@@ -113,6 +113,14 @@ Located in `shared/schema.ts`, defines:
 - **Professional Categories**: Organized by portfolio, SaaS, e-commerce, blogs, dashboards, documentation, and static sites
 - **Enhanced Search & Filtering**: Advanced template discovery with category filtering and framework-specific icons
 
+### Interactive Onboarding Tutorial System (January 22, 2025)
+- **Smart Tutorial System**: Comprehensive onboarding with interactive tooltips and guided tours for new users
+- **Automatic Detection**: New users receive automatic tutorial start with localStorage tracking for completion status
+- **Floating Help Button**: Always-available help button (bottom-right) allows manual tutorial restart anytime
+- **Page-Specific Tours**: Custom onboarding flows for Landing page, Dashboard, Templates, AI Copilot, and Project detail pages
+- **Interactive Tooltips**: Professional tooltip design with step navigation, skip options, and progress tracking
+- **Enhanced UX**: Targeted element highlighting, backdrop blur, and smooth animations for engaging user experience
+
 ## Recent Major Updates (January 22, 2025)
 
 ### Project Migration to Replit Environment (January 22, 2025)

@@ -313,7 +313,7 @@ export default function TemplatesPage() {
       {/* Header */}
       <section className="py-20 px-6 bg-gradient-to-b from-dark-800 to-dark-900">
         <div className="max-w-6xl mx-auto text-center">
-          <h1 className="text-5xl font-bold mb-6">
+          <h1 data-onboarding="templates-title" className="text-5xl font-bold mb-6">
             <span className="flame-gradient-text">Templates</span>
           </h1>
           <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
@@ -322,7 +322,7 @@ export default function TemplatesPage() {
           </p>
           
           {/* Search */}
-          <div className="max-w-md mx-auto relative mb-8">
+          <div data-onboarding="template-search" className="max-w-md mx-auto relative mb-8">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
             <Input
               type="text"
@@ -334,7 +334,7 @@ export default function TemplatesPage() {
           </div>
 
           {/* Categories */}
-          <div className="flex flex-wrap justify-center gap-2">
+          <div data-onboarding="template-categories" className="flex flex-wrap justify-center gap-2">
             {categories.map((category) => (
               <Button
                 key={category.id}
@@ -362,8 +362,12 @@ export default function TemplatesPage() {
             </h2>
             
             <div className="grid lg:grid-cols-3 gap-8">
-              {featuredTemplates.map((template) => (
-                <Card key={template.id} className="bg-dark-800 border-dark-600 hover:border-neon-orange/50 transition-all group">
+              {featuredTemplates.map((template, index) => (
+                <Card 
+                  key={template.id} 
+                  data-onboarding={index === 0 ? "featured-template" : undefined}
+                  className="bg-dark-800 border-dark-600 hover:border-neon-orange/50 transition-all group"
+                >
                   <div className="relative overflow-hidden rounded-t-lg">
                     <div className="w-full h-48 bg-gradient-to-br from-neon-orange/20 to-neon-red/20 flex items-center justify-center">
                       <Globe className="w-16 h-16 text-neon-orange/60" />

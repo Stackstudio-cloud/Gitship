@@ -233,7 +233,7 @@ export default App;`
           <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-neon-yellow to-neon-orange rounded-full mb-6">
             <Sparkles className="w-10 h-10 text-dark-900" />
           </div>
-          <h1 className="text-5xl font-bold mb-6">
+          <h1 data-onboarding="ai-title" className="text-5xl font-bold mb-6">
             AI <span className="flame-gradient-text">Copilot</span>
           </h1>
           <p className="text-xl text-gray-400 mb-8 max-w-3xl mx-auto">
@@ -346,7 +346,15 @@ export default App;`
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {aiFeatures.map((feature, index) => (
-              <Card key={index} className="bg-dark-700 border-dark-600 hover:border-neon-orange/50 transition-all">
+              <Card 
+                key={index} 
+                data-onboarding={
+                  feature.title === "Code Quality Insights" ? "code-analysis-card" :
+                  feature.title === "Performance Intelligence" ? "performance-card" :
+                  undefined
+                }
+                className="bg-dark-700 border-dark-600 hover:border-neon-orange/50 transition-all"
+              >
                 <CardHeader>
                   <div className="flex items-center justify-between mb-4">
                     <div className={`w-12 h-12 bg-${feature.color}/20 rounded-lg flex items-center justify-center`}>
@@ -363,6 +371,7 @@ export default App;`
                   <div className="flex justify-center">
                     {feature.title === "Code Quality Insights" && feature.status === "beta" ? (
                       <Button 
+                        data-onboarding="demo-button"
                         onClick={() => runDemo('code-analysis')}
                         disabled={isAnalyzing}
                         className="flame-gradient text-dark-900 font-semibold disabled:opacity-50"
