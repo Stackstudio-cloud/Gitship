@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -163,157 +164,380 @@ export default function CreateProjectPage() {
     createProjectMutation.mutate(data);
   };
 
+  // Animation variants
+  const pageVariants = {
+    initial: { opacity: 0, x: 100 },
+    in: { opacity: 1, x: 0 },
+    out: { opacity: 0, x: -100 }
+  };
+
+  const pageTransition = {
+    type: "tween",
+    ease: "anticipate",
+    duration: 0.6
+  };
+
+  const staggerContainer = {
+    initial: { opacity: 0 },
+    in: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const staggerItem = {
+    initial: { opacity: 0, y: 20 },
+    in: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        damping: 20,
+        stiffness: 100
+      }
+    }
+  };
+
   const isConnected = user?.githubAccessToken && user?.githubUsername;
 
   if (!isConnected) {
     return (
-      <div className="min-h-screen bg-dark-900 p-6">
+      <motion.div 
+        className="min-h-screen bg-dark-900 p-6"
+        initial="initial"
+        animate="in"
+        exit="out"
+        variants={pageVariants}
+        transition={pageTransition}
+      >
         <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Create New Project</h1>
-            <p className="text-gray-400">Deploy your GitHub repository with GitShip</p>
-          </div>
+          <motion.div 
+            className="mb-8"
+            variants={staggerContainer}
+            initial="initial"
+            animate="in"
+          >
+            <motion.h1 
+              className="text-3xl font-bold text-white mb-2"
+              variants={staggerItem}
+            >
+              Create New Project
+            </motion.h1>
+            <motion.p 
+              className="text-gray-400"
+              variants={staggerItem}
+            >
+              Deploy your GitHub repository with GitShip
+            </motion.p>
+          </motion.div>
 
-          <div className="flex items-center justify-center min-h-[400px]">
-            <Card className="w-full max-w-md bg-dark-800 border-dark-600">
-              <CardHeader className="text-center">
-                <Github className="w-12 h-12 text-neon-cyan mx-auto mb-4" />
-                <CardTitle className="text-white">Connect GitHub Account</CardTitle>
-                <CardDescription className="text-gray-400">
-                  Connect your GitHub account to access your repositories and start deploying
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <GitHubConnectButton />
-              </CardContent>
-            </Card>
-          </div>
+          <motion.div 
+            className="flex items-center justify-center min-h-[400px]"
+            variants={staggerItem}
+            initial="initial"
+            animate="in"
+          >
+            <motion.div
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+            >
+              <Card className="w-full max-w-md bg-dark-800 border-dark-600 hover:border-neon-cyan/50 transition-colors duration-300">
+                <CardHeader className="text-center">
+                  <motion.div
+                    animate={{ 
+                      rotate: [0, 360],
+                      scale: [1, 1.1, 1]
+                    }}
+                    transition={{ 
+                      duration: 2,
+                      repeat: Infinity,
+                      repeatDelay: 3
+                    }}
+                  >
+                    <Github className="w-12 h-12 text-neon-cyan mx-auto mb-4" />
+                  </motion.div>
+                  <CardTitle className="text-white">Connect GitHub Account</CardTitle>
+                  <CardDescription className="text-gray-400">
+                    Connect your GitHub account to access your repositories and start deploying
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <GitHubConnectButton />
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   if (step === 'connect') {
     return (
-      <div className="min-h-screen bg-dark-900 p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Create New Project</h1>
-            <p className="text-gray-400">Select a repository to deploy</p>
-          </div>
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key="connect-step"
+          className="min-h-screen bg-dark-900 p-6"
+          initial="initial"
+          animate="in"
+          exit="out"
+          variants={pageVariants}
+          transition={pageTransition}
+        >
+          <div className="max-w-4xl mx-auto">
+            <motion.div 
+              className="mb-8"
+              variants={staggerContainer}
+              initial="initial"
+              animate="in"
+            >
+              <motion.h1 
+                className="text-3xl font-bold text-white mb-2"
+                variants={staggerItem}
+              >
+                Create New Project
+              </motion.h1>
+              <motion.p 
+                className="text-gray-400"
+                variants={staggerItem}
+              >
+                Select a repository to deploy
+              </motion.p>
+            </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Progress Steps */}
-            <div className="lg:col-span-1">
-              <Card className="bg-dark-800 border-dark-600">
-                <CardHeader>
-                  <CardTitle className="text-white">Steps</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-neon-cyan text-dark-900 flex items-center justify-center text-sm font-medium">
-                      1
-                    </div>
-                    <span className="text-white">Select Repository</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-dark-600 text-gray-400 flex items-center justify-center text-sm font-medium">
-                      2
-                    </div>
-                    <span className="text-gray-400">Configure Settings</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-dark-600 text-gray-400 flex items-center justify-center text-sm font-medium">
-                      3
-                    </div>
-                    <span className="text-gray-400">Deploy Project</span>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <motion.div 
+              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+              variants={staggerContainer}
+              initial="initial"
+              animate="in"
+            >
+              {/* Progress Steps */}
+              <motion.div 
+                className="lg:col-span-1"
+                variants={staggerItem}
+              >
+                <Card className="bg-dark-800 border-dark-600">
+                  <CardHeader>
+                    <CardTitle className="text-white">Steps</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <motion.div 
+                      className="flex items-center space-x-3"
+                      whileHover={{ scale: 1.05, x: 10 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    >
+                      <motion.div 
+                        className="w-8 h-8 rounded-full bg-neon-cyan text-dark-900 flex items-center justify-center text-sm font-medium"
+                        animate={{
+                          boxShadow: [
+                            "0 0 0 0 rgba(34, 211, 238, 0.7)",
+                            "0 0 0 10px rgba(34, 211, 238, 0)",
+                            "0 0 0 0 rgba(34, 211, 238, 0)"
+                          ]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        1
+                      </motion.div>
+                      <span className="text-white">Select Repository</span>
+                    </motion.div>
+                    <motion.div 
+                      className="flex items-center space-x-3"
+                      initial={{ opacity: 0.5 }}
+                      animate={{ opacity: 0.5 }}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-dark-600 text-gray-400 flex items-center justify-center text-sm font-medium">
+                        2
+                      </div>
+                      <span className="text-gray-400">Configure Settings</span>
+                    </motion.div>
+                    <motion.div 
+                      className="flex items-center space-x-3"
+                      initial={{ opacity: 0.5 }}
+                      animate={{ opacity: 0.5 }}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-dark-600 text-gray-400 flex items-center justify-center text-sm font-medium">
+                        3
+                      </div>
+                      <span className="text-gray-400">Deploy Project</span>
+                    </motion.div>
+                  </CardContent>
+                </Card>
+              </motion.div>
 
-            {/* Repository Selection */}
-            <div className="lg:col-span-2">
-              <GitHubConnectButton 
-                variant="card" 
-                onRepositorySelect={handleRepositorySelect}
-                selectedRepo={selectedRepo?.full_name}
-              />
-            </div>
+              {/* Repository Selection */}
+              <motion.div 
+                className="lg:col-span-2"
+                variants={staggerItem}
+              >
+                <GitHubConnectButton 
+                  variant="card" 
+                  onRepositorySelect={handleRepositorySelect}
+                  selectedRepo={selectedRepo?.full_name}
+                />
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
   if (step === 'configure') {
     return (
-      <div className="min-h-screen bg-dark-900 p-6">
-        <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">Configure Project</h1>
-            <p className="text-gray-400">Set up build configuration and deployment settings</p>
-          </div>
+      <AnimatePresence mode="wait">
+        <motion.div 
+          key="configure-step"
+          className="min-h-screen bg-dark-900 p-6"
+          initial="initial"
+          animate="in"
+          exit="out"
+          variants={pageVariants}
+          transition={pageTransition}
+        >
+          <div className="max-w-4xl mx-auto">
+            <motion.div 
+              className="mb-8"
+              variants={staggerContainer}
+              initial="initial"
+              animate="in"
+            >
+              <motion.h1 
+                className="text-3xl font-bold text-white mb-2"
+                variants={staggerItem}
+              >
+                Configure Project
+              </motion.h1>
+              <motion.p 
+                className="text-gray-400"
+                variants={staggerItem}
+              >
+                Set up build configuration and deployment settings
+              </motion.p>
+            </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Progress Steps */}
-            <div className="lg:col-span-1">
-              <Card className="bg-dark-800 border-dark-600 mb-6">
-                <CardHeader>
-                  <CardTitle className="text-white">Steps</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="flex items-center space-x-3">
-                    <CheckCircle className="w-6 h-6 text-green-400" />
-                    <span className="text-white">Select Repository</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-neon-cyan text-dark-900 flex items-center justify-center text-sm font-medium">
-                      2
-                    </div>
-                    <span className="text-white">Configure Settings</span>
-                  </div>
-                  <div className="flex items-center space-x-3">
-                    <div className="w-8 h-8 rounded-full bg-dark-600 text-gray-400 flex items-center justify-center text-sm font-medium">
-                      3
-                    </div>
-                    <span className="text-gray-400">Deploy Project</span>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Selected Repository */}
-              {selectedRepo && (
-                <Card className="bg-dark-800 border-dark-600">
+            <motion.div 
+              className="grid grid-cols-1 lg:grid-cols-3 gap-6"
+              variants={staggerContainer}
+              initial="initial"
+              animate="in"
+            >
+              {/* Progress Steps */}
+              <motion.div 
+                className="lg:col-span-1"
+                variants={staggerItem}
+              >
+                <Card className="bg-dark-800 border-dark-600 mb-6">
                   <CardHeader>
-                    <CardTitle className="text-white text-sm">Selected Repository</CardTitle>
+                    <CardTitle className="text-white">Steps</CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="flex items-center space-x-2 mb-2">
-                      <Github className="w-4 h-4 text-white" />
-                      <span className="text-white font-medium">{selectedRepo.name}</span>
-                    </div>
-                    <p className="text-sm text-gray-400 mb-3">
-                      {selectedRepo.description || 'No description'}
-                    </p>
-                    <div className="flex items-center space-x-2">
-                      <Badge variant="outline" className="text-xs">
-                        <GitBranch className="w-3 h-3 mr-1" />
-                        {selectedRepo.default_branch}
-                      </Badge>
-                      {selectedRepo.language && (
-                        <Badge variant="outline" className="text-xs">
-                          {selectedRepo.language}
-                        </Badge>
-                      )}
-                    </div>
+                  <CardContent className="space-y-4">
+                    <motion.div 
+                      className="flex items-center space-x-3"
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.3 }}
+                    >
+                      <motion.div
+                        animate={{
+                          scale: [1, 1.2, 1],
+                          rotate: [0, 360]
+                        }}
+                        transition={{
+                          duration: 0.8,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        <CheckCircle className="w-6 h-6 text-green-400" />
+                      </motion.div>
+                      <span className="text-white">Select Repository</span>
+                    </motion.div>
+                    <motion.div 
+                      className="flex items-center space-x-3"
+                      whileHover={{ scale: 1.05, x: 10 }}
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    >
+                      <motion.div 
+                        className="w-8 h-8 rounded-full bg-neon-cyan text-dark-900 flex items-center justify-center text-sm font-medium"
+                        animate={{
+                          boxShadow: [
+                            "0 0 0 0 rgba(34, 211, 238, 0.7)",
+                            "0 0 0 10px rgba(34, 211, 238, 0)",
+                            "0 0 0 0 rgba(34, 211, 238, 0)"
+                          ]
+                        }}
+                        transition={{
+                          duration: 2,
+                          repeat: Infinity,
+                          ease: "easeInOut"
+                        }}
+                      >
+                        2
+                      </motion.div>
+                      <span className="text-white">Configure Settings</span>
+                    </motion.div>
+                    <motion.div 
+                      className="flex items-center space-x-3"
+                      initial={{ opacity: 0.5 }}
+                      animate={{ opacity: 0.5 }}
+                    >
+                      <div className="w-8 h-8 rounded-full bg-dark-600 text-gray-400 flex items-center justify-center text-sm font-medium">
+                        3
+                      </div>
+                      <span className="text-gray-400">Deploy Project</span>
+                    </motion.div>
                   </CardContent>
                 </Card>
-              )}
-            </div>
 
-            {/* Configuration Form */}
-            <div className="lg:col-span-2">
+                {/* Selected Repository */}
+                {selectedRepo && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30, delay: 0.4 }}
+                  >
+                    <Card className="bg-dark-800 border-dark-600">
+                      <CardHeader>
+                        <CardTitle className="text-white text-sm">Selected Repository</CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="flex items-center space-x-2 mb-2">
+                          <Github className="w-4 h-4 text-white" />
+                          <span className="text-white font-medium">{selectedRepo.name}</span>
+                        </div>
+                        <p className="text-sm text-gray-400 mb-3">
+                          {selectedRepo.description || 'No description'}
+                        </p>
+                        <div className="flex items-center space-x-2">
+                          <Badge variant="outline" className="text-xs">
+                            <GitBranch className="w-3 h-3 mr-1" />
+                            {selectedRepo.default_branch}
+                          </Badge>
+                          {selectedRepo.language && (
+                            <Badge variant="outline" className="text-xs">
+                              {selectedRepo.language}
+                            </Badge>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
+              </motion.div>
+
+              {/* Configuration Form */}
+              <motion.div 
+                className="lg:col-span-2"
+                variants={staggerItem}
+              >
               <Card className="bg-dark-800 border-dark-600">
                 <CardHeader>
                   <CardTitle className="text-white">Project Configuration</CardTitle>
@@ -482,10 +706,11 @@ export default function CreateProjectPage() {
                   </Form>
                 </CardContent>
               </Card>
-            </div>
+              </motion.div>
+            </motion.div>
           </div>
-        </div>
-      </div>
+        </motion.div>
+      </AnimatePresence>
     );
   }
 
