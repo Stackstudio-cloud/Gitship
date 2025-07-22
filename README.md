@@ -7,10 +7,10 @@
   <p>Built for developers who demand lightning-fast deployments with flame-powered speed and intelligent tooling</p>
   
   <p>
-    <a href="https://bf3b7ef6-2392-4831-b5b9-fb66487d1eaf-00-1i5maa9yxi5y9.spock.replit.dev/">🚀 Live Demo</a> • 
-    <a href="https://bf3b7ef6-2392-4831-b5b9-fb66487d1eaf-00-1i5maa9yxi5y9.spock.replit.dev/oauth-demo">⚡ OAuth Demo</a> • 
-    <a href="https://bf3b7ef6-2392-4831-b5b9-fb66487d1eaf-00-1i5maa9yxi5y9.spock.replit.dev/templates">📦 Templates</a> • 
-    <a href="https://bf3b7ef6-2392-4831-b5b9-fb66487d1eaf-00-1i5maa9yxi5y9.spock.replit.dev/ai-copilot">🤖 AI Copilot</a>
+    <a href="https://gitship.pro/">🚀 Live Demo</a> • 
+    <a href="https://gitship.pro/oauth-demo">⚡ OAuth Demo</a> • 
+    <a href="https://gitship.pro/templates">📦 Templates</a> • 
+    <a href="https://gitship.pro/ai-copilot">🤖 AI Copilot</a>
   </p>
   
   <img src="https://img.shields.io/badge/Status-Beta-orange?style=for-the-badge" alt="Beta Status"/>
@@ -98,7 +98,7 @@
 
 Create a `.env` file with:
 ```bash
-# Database (provided by Replit/Neon)
+# Database (PostgreSQL)
 DATABASE_URL=your_postgresql_url
 SESSION_SECRET=your_session_secret
 
@@ -120,7 +120,7 @@ GITHUB_WEBHOOK_SECRET=your_webhook_secret
 ### Installation & Development
 
 ```bash
-# Install dependencies (automatically handled by Replit)
+# Install dependencies
 npm install
 
 # Push database schema
@@ -130,7 +130,7 @@ npm run db:push
 npm run dev
 ```
 
-Visit your Replit URL to see GitShip in action! 🔥
+Visit https://gitship.pro to see GitShip in action! 🔥
 
 ## 📁 Project Structure
 
@@ -359,7 +359,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
   </p>
   
   <p>
-    <a href="https://bf3b7ef6-2392-4831-b5b9-fb66487d1eaf-00-1i5maa9yxi5y9.spock.replit.dev/">Try GitShip Now →</a>
+    <a href="https://gitship.pro/">Try GitShip Now →</a>
   </p>
   
   <p><em>Star ⭐ this repository if you love what we're building!</em></p>
