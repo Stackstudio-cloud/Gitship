@@ -23,6 +23,7 @@ import GuidesPage from "@/pages/guides";
 import AICopilotPage from "@/pages/ai-copilot";
 import PerformanceInsightsPage from "@/pages/performance-insights";
 import OAuthDemoPage from "@/pages/oauth-demo";
+import CreateProjectPage from "@/pages/create-project";
 
 function Router() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -63,6 +64,7 @@ function Router() {
             <Route path="/ai-copilot" component={AICopilotPage} />
             <Route path="/performance" component={PerformanceInsightsPage} />
             <Route path="/oauth-demo" component={OAuthDemoPage} />
+            <Route path="/create-project" component={CreateProjectPage} />
           </>
         )}
         <Route component={NotFound} />

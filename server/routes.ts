@@ -6,7 +6,9 @@ import { setupAuth, isAuthenticated } from "./replitAuth";
 import { insertProjectSchema, insertDeploymentSchema } from "@shared/schema";
 import { GitHubService } from "./github";
 import { gitshipAI } from "./ai";
+import { BuildService } from "./builder";
 import { z } from "zod";
+import crypto from "crypto";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
@@ -249,44 +251,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Project not found" });
       }
       
-      // Create new deployment
-      const deployment = await storage.createDeployment({
-        projectId,
-        commitHash: `deploy-${Date.now()}`,
-        commitMessage: req.body.commitMessage || 'Manual deployment',
-        branch: project.branch || 'main',
-        status: 'queued',
-        startedAt: new Date(),
-      });
-      
-      // Start build process (simulated)
-      setTimeout(async () => {
-        try {
-          await storage.updateDeployment(deployment.id, {
-            status: 'building',
-            buildLogs: 'Building project...\nInstalling dependencies...\nRunning build command...\n',
-          });
-          
-          // Simulate build completion
-          setTimeout(async () => {
-            await storage.updateDeployment(deployment.id, {
-              status: 'success',
-              buildLogs: 'Building project...\nInstalling dependencies...\nRunning build command...\nBuild completed successfully!\n',
-              deployUrl: `https://${project.name.toLowerCase()}-${deployment.id}.gitship.app`,
-              previewUrl: `https://preview-${deployment.id}.gitship.app`,
-              buildTime: Math.floor(Math.random() * 120) + 30,
-              completedAt: new Date(),
-            });
-          }, 5000);
-        } catch (error) {
-          console.error("Build process failed:", error);
-          await storage.updateDeployment(deployment.id, {
-            status: 'failed',
-            buildLogs: 'Building project...\nInstalling dependencies...\nRunning build command...\nError: Build failed\n',
-            completedAt: new Date(),
-          });
-        }
-      }, 1000);
+      // Trigger real deployment
+      const deployment = await BuildService.triggerDeployment(
+        projectId, 
+        req.body.commitHash, 
+        req.body.branch
+      );
       
       res.json(deployment);
     } catch (error) {
@@ -325,6 +295,124 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error creating team secret:", error);
       res.status(500).json({ message: "Failed to create team secret" });
+    }
+  });
+
+  // GitHub webhook endpoint
+  app.post('/api/webhooks/github', async (req, res) => {
+    try {
+      const signature = req.headers['x-hub-signature-256'] as string;
+      const payload = JSON.stringify(req.body);
+      
+      // Verify webhook signature
+      if (process.env.GITHUB_WEBHOOK_SECRET) {
+        const expectedSignature = `sha256=${crypto
+          .createHmac('sha256', process.env.GITHUB_WEBHOOK_SECRET)
+          .update(payload)
+          .digest('hex')}`;
+        
+        if (signature !== expectedSignature) {
+          console.error('Invalid webhook signature');
+          return res.status(401).json({ message: 'Invalid signature' });
+        }
+      }
+
+      const event = req.headers['x-github-event'] as string;
+      
+      if (event === 'push') {
+        const { repository, ref, after: commitHash, commits } = req.body;
+        const branch = ref.split('/').pop();
+        
+        // Find projects associated with this repository
+        const projects = await storage.getAllProjects();
+        const matchingProjects = projects.filter(p => 
+          p.githubOwner === repository.owner.login && 
+          p.githubRepo === repository.name &&
+          p.autoDeployEnabled &&
+          (p.branch === branch || (p.branch === 'main' && branch === 'master'))
+        );
+
+        for (const project of matchingProjects) {
+          try {
+            const commitMessage = commits?.[0]?.message || 'Webhook deployment';
+            
+            await BuildService.triggerDeployment(project.id, commitHash, branch);
+            console.log(`Triggered deployment for project ${project.id} from webhook`);
+          } catch (error) {
+            console.error(`Failed to trigger deployment for project ${project.id}:`, error);
+          }
+        }
+      }
+
+      res.json({ message: 'Webhook processed successfully' });
+    } catch (error) {
+      console.error('Webhook error:', error);
+      res.status(500).json({ message: 'Failed to process webhook' });
+    }
+  });
+
+  // Environment variables routes
+  app.get('/api/projects/:id/env', isAuthenticated, async (req: any, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const project = await storage.getProject(projectId);
+      
+      if (!project || project.userId !== req.user.claims.sub) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      const envVars = await storage.getEnvironmentVariables(projectId);
+      // Don't return actual values for security
+      const sanitizedVars = envVars.map(env => ({
+        ...env,
+        value: env.isSecret ? '***' : env.value
+      }));
+      
+      res.json(sanitizedVars);
+    } catch (error) {
+      console.error("Error fetching environment variables:", error);
+      res.status(500).json({ message: "Failed to fetch environment variables" });
+    }
+  });
+
+  app.post('/api/projects/:id/env', isAuthenticated, async (req: any, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const project = await storage.getProject(projectId);
+      
+      if (!project || project.userId !== req.user.claims.sub) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      const { key, value } = req.body;
+      
+      if (!key || value === undefined) {
+        return res.status(400).json({ message: "Key and value are required" });
+      }
+      
+      const envVar = await storage.setEnvironmentVariable(projectId, key, value);
+      res.json({ ...envVar, value: envVar.isSecret ? '***' : envVar.value });
+    } catch (error) {
+      console.error("Error setting environment variable:", error);
+      res.status(500).json({ message: "Failed to set environment variable" });
+    }
+  });
+
+  app.delete('/api/projects/:id/env/:key', isAuthenticated, async (req: any, res) => {
+    try {
+      const projectId = parseInt(req.params.id);
+      const { key } = req.params;
+      const project = await storage.getProject(projectId);
+      
+      if (!project || project.userId !== req.user.claims.sub) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+      
+      await storage.deleteEnvironmentVariable(projectId, key);
+      res.json({ message: "Environment variable deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting environment variable:", error);
+      res.status(500).json({ message: "Failed to delete environment variable" });
     }
   });
 
