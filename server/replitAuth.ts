@@ -87,6 +87,7 @@ export async function setupAuth(app: Express) {
   // Include both Replit domains and custom domains
   const allDomains = [
     ...process.env.REPLIT_DOMAINS!.split(","),
+    "gitship-netheracegame.replit.app",
     "gitship.pro"
   ];
   
