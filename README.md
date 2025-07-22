@@ -1,8 +1,21 @@
 # GitShip 🔥
 
 <div align="center">
-  <h3>The ultimate open-source deployment platform with flame-powered speed</h3>
-  <p>Built for developers who demand lightning-fast deployments with beautiful, intelligent tooling</p>
+  <img src="attached_assets/gitship_1753122655919.png" alt="GitShip Logo" width="400"/>
+  
+  <h3>The Next-Generation Open-Source Deployment Platform</h3>
+  <p>Built for developers who demand lightning-fast deployments with flame-powered speed and intelligent tooling</p>
+  
+  <p>
+    <a href="https://bf3b7ef6-2392-4831-b5b9-fb66487d1eaf-00-1i5maa9yxi5y9.spock.replit.dev/">🚀 Live Demo</a> • 
+    <a href="https://bf3b7ef6-2392-4831-b5b9-fb66487d1eaf-00-1i5maa9yxi5y9.spock.replit.dev/oauth-demo">⚡ OAuth Demo</a> • 
+    <a href="https://bf3b7ef6-2392-4831-b5b9-fb66487d1eaf-00-1i5maa9yxi5y9.spock.replit.dev/templates">📦 Templates</a> • 
+    <a href="https://bf3b7ef6-2392-4831-b5b9-fb66487d1eaf-00-1i5maa9yxi5y9.spock.replit.dev/ai-copilot">🤖 AI Copilot</a>
+  </p>
+  
+  <img src="https://img.shields.io/badge/Status-Beta-orange?style=for-the-badge" alt="Beta Status"/>
+  <img src="https://img.shields.io/badge/License-MIT-blue?style=for-the-badge" alt="MIT License"/>
+  <img src="https://img.shields.io/badge/TypeScript-100%25-blue?style=for-the-badge&logo=typescript" alt="TypeScript"/>
 </div>
 
 ---
