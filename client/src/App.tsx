@@ -6,6 +6,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/useAuth";
 import { OnboardingProvider } from "@/components/onboarding/OnboardingProvider";
 import OnboardingTrigger from "@/components/onboarding/OnboardingTrigger";
+import HelpCenter from "@/components/help/HelpCenter";
+import ContextualHelp from "@/components/help/ContextualHelp";
+import SmartAssistant from "@/components/help/SmartAssistant";
 import { landingOnboardingSteps, dashboardOnboardingSteps } from "@/data/onboardingSteps";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
@@ -65,6 +68,9 @@ function Router() {
         <Route component={NotFound} />
       </Switch>
       <OnboardingTrigger />
+      <HelpCenter />
+      <ContextualHelp />
+      <SmartAssistant />
     </OnboardingProvider>
   );
 }
