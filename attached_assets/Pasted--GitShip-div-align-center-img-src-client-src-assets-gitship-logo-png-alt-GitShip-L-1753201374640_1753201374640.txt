@@ -1,0 +1,224 @@
+# GitShip 🔥
+
+<div align="center">
+  <img src="client/src/assets/gitship-logo.png" alt="GitShip Logo" width="100" height="100">
+  <h3>A powerful, open-source Netlify alternative with flame-powered deployments</h3>
+  <p>Built for developers who want fast, reliable, and beautiful deployment experiences</p>
+</div>
+
+---
+
+## 🌟 Features
+
+### 🔥 Core Platform
+- **GitHub Integration**: Native GitHub OAuth authentication and repository browser
+- **Framework Auto-Detection**: Supports 9+ popular frameworks (React, Next.js, Vue, Angular, etc.)
+- **Real-time Build Logs**: WebSocket-powered live build streaming with downloadable logs
+- **Team Collaboration**: Role-based team management with invitation system
+- **Custom Domains**: DNS setup guidance and SSL certificate management
+- **Environment Variables**: Secure environment variable management
+- **Analytics Dashboard**: Performance metrics and deployment statistics
+
+### 🎨 Design & Experience
+- **Flame Theme**: Beautiful dark mode with red-orange-yellow-cyan flame colors
+- **Responsive UI**: Professional interface optimized for all screen sizes
+- **Real-time Updates**: Live build progress and deployment status
+- **GitShip Branding**: Custom logo and flame-themed visual identity
+
+### 🛠 Technical Stack
+- **Frontend**: React + TypeScript, Vite, TailwindCSS, shadcn/ui
+- **Backend**: Node.js + Express, PostgreSQL, Drizzle ORM
+- **Authentication**: Replit Auth with OpenID Connect
+- **Real-time**: WebSocket integration for live features
+- **GitHub API**: Full repository integration with @octokit/rest
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ 
+- PostgreSQL database
+- GitHub OAuth App (for GitHub integration)
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/yourusername/gitship.git
+   cd gitship
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup**
+   ```bash
+   # Required for database
+   DATABASE_URL=your_postgresql_url
+   SESSION_SECRET=your_session_secret
+   
+   # Required for GitHub integration
+   GITHUB_CLIENT_ID=your_github_client_id
+   GITHUB_CLIENT_SECRET=your_github_client_secret
+   ```
+
+4. **Database Setup**
+   ```bash
+   npm run db:push
+   ```
+
+5. **Start Development Server**
+   ```bash
+   npm run dev
+   ```
+
+Visit `http://localhost:5000` to see GitShip in action! 🔥
+
+## 📁 Project Structure
+
+```
+gitship/
+├── client/                 # React frontend
+│   ├── src/
+│   │   ├── components/     # UI components
+│   │   ├── pages/         # Route pages
+│   │   ├── hooks/         # React hooks
+│   │   ├── lib/           # Utilities
+│   │   └── assets/        # Static assets
+├── server/                 # Express backend
+│   ├── index.ts           # Server entry point
+│   ├── routes.ts          # API routes
+│   ├── db.ts              # Database connection
+│   ├── githubAuth.ts      # GitHub OAuth
+│   ├── githubApi.ts       # GitHub API integration
+│   └── storage.ts         # Data access layer
+├── shared/                 # Shared types/schemas
+│   └── schema.ts          # Database schema
+└── README.md              # This file
+```
+
+## 🔧 Configuration
+
+### GitHub OAuth Setup
+
+1. Go to GitHub → Settings → Developer settings → OAuth Apps
+2. Create a new OAuth App with:
+   - **Application name**: GitShip
+   - **Homepage URL**: `http://localhost:5000` (development)
+   - **Authorization callback URL**: `http://localhost:5000/api/auth/github/callback`
+3. Copy the Client ID and Client Secret to your environment variables
+
+### Database Schema
+
+GitShip uses Drizzle ORM with PostgreSQL. Key tables include:
+
+- **users**: User authentication and profiles
+- **projects**: Repository configurations and settings
+- **deployments**: Build history and deployment metadata
+- **teams**: Team collaboration and permissions
+- **domains**: Custom domain management
+- **analytics**: Performance and usage metrics
+
+## 🌐 API Endpoints
+
+### Authentication
+- `GET /api/auth/user` - Get current user
+- `GET /api/login` - GitHub OAuth login
+- `GET /api/logout` - Logout user
+
+### Projects
+- `GET /api/projects` - List user projects
+- `POST /api/projects` - Create new project
+- `GET /api/projects/:id` - Get project details
+- `PUT /api/projects/:id` - Update project
+- `DELETE /api/projects/:id` - Delete project
+
+### GitHub Integration
+- `GET /api/github/status` - GitHub connection status
+- `GET /api/github/repositories` - List user repositories
+- `POST /api/github/analyze` - Analyze repository for framework
+
+### Deployments
+- `GET /api/projects/:id/deployments` - List project deployments
+- `POST /api/projects/:id/deploy` - Trigger new deployment
+- `GET /api/deployments/:id/logs` - Get deployment logs
+
+## 🔥 Flame Color Palette
+
+GitShip uses a carefully crafted flame-inspired color scheme:
+
+```css
+/* Flame Colors */
+--flame-red: 240 62% 56%      /* Primary actions */
+--flame-orange: 25 95% 53%    /* Secondary actions */
+--flame-yellow: 45 93% 58%    /* Success states */
+--flame-purple: 271 81% 56%   /* Accent elements */
+--flame-cyan: 188 94% 42%     /* Links and highlights */
+
+/* Dark Theme */
+--dark-900: 222 84% 5%        /* Background */
+--dark-800: 215 28% 17%       /* Surface */
+--dark-700: 215 20% 25%       /* Elevated surface */
+```
+
+## 🚦 Development
+
+### Available Scripts
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run db:push` - Push database schema changes
+- `npm run db:studio` - Open Drizzle Studio
+
+### Development Guidelines
+- Follow the flame color scheme for consistency
+- Use TypeScript for type safety
+- Implement proper error handling
+- Add real-time features where beneficial
+- Maintain responsive design principles
+
+## 🤝 Contributing
+
+We welcome contributions! Here's how to get started:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Development Priorities
+- Real GitHub/GitLab API integration
+- Docker containerization for builds
+- CDN integration for global distribution
+- Enhanced security features
+- Performance optimizations
+
+## 📊 Production Roadmap
+
+GitShip is designed as part of a larger 6-project integration platform. Current production requirements include:
+
+- **Build Infrastructure**: Scalable build workers and containerization
+- **CDN Integration**: Global content delivery network
+- **SSL Management**: Automated certificate provisioning
+- **Payment Processing**: Subscription billing system
+- **Monitoring**: Error tracking and performance monitoring
+- **Enterprise Features**: Advanced authentication and audit logs
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- [Documentation](docs/) - Comprehensive guides and API docs
+- [Contributing Guidelines](CONTRIBUTING.md) - How to contribute
+- [Issues](https://github.com/yourusername/gitship/issues) - Bug reports and feature requests
+- [Discussions](https://github.com/yourusername/gitship/discussions) - Community discussions
+
+---
+
+<div align="center">
+  <p>Built with 🔥 by the GitShip team</p>
+  <p>Ready to ship your code at the speed of flame?</p>
+</div>

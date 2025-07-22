@@ -1,0 +1,153 @@
+1. Project Goal
+
+Build a simplified, open-source clone of the web platform Netlify. The platform, which we'll call "RepliDeploy," will enable users to connect their GitHub repositories and automatically build and deploy frontend web applications. It will feature a full CI/CD pipeline, static asset hosting via a CDN, serverless function support, and custom domain management with automated SSL.
+
+2. Core Philosophy & Architecture
+
+Git-Driven Workflow: The entire process is initiated from a git push. This is the single source of truth for deployments.
+
+Jamstack Focus: The platform is optimized for pre-rendering static sites (e.g., Next.js, Astro, Hugo) for maximum performance and security.
+
+Atomic & Immutable Deploys: Every deploy is a complete, atomic snapshot of the site. This enables instant rollbacks and previews.
+
+Developer Experience: The user interface and workflow should be simple, intuitive, and require minimal configuration.
+
+3. Proposed Technology Stack
+
+Frontend Dashboard: Next.js (React) with Tailwind CSS.
+
+Backend API: Node.js with the Express.js framework.
+
+Database: PostgreSQL for storing user, site, and deployment information. Use Prisma as the ORM.
+
+CI/CD & Build System:
+
+Orchestration: Backend API will handle webhook events.
+
+Build Environment: Docker for creating isolated, secure, and reproducible build containers.
+
+Real-time Log Streaming: WebSockets (using a library like ws or socket.io).
+
+Infrastructure (AWS):
+
+Static Asset Storage: Amazon S3.
+
+Content Delivery Network (CDN): Amazon CloudFront.
+
+Serverless Functions: AWS Lambda and AWS API Gateway.
+
+Authentication: JWT (JSON Web Tokens).
+
+SSL Certificates: Let's Encrypt, automated via Certbot or a similar client.
+
+4. Component Breakdown & Implementation Plan
+
+Part A: Backend API & User Dashboard
+
+Project Setup: Initialize a monorepo structure with two packages: /dashboard for the Next.js frontend and /api for the Express.js backend.
+
+User Authentication:
+
+Create User model in the database (email, password hash).
+
+Implement API endpoints: POST /auth/register, POST /auth/login.
+
+Use JWT for session management. The login endpoint returns a token that the frontend stores and sends with subsequent requests.
+
+Dashboard UI:
+
+Create login and registration pages.
+
+After login, create a main dashboard page that will list the user's sites.
+
+Implement a "Connect with GitHub" button to initiate the OAuth flow.
+
+Part B: Git Integration & CI/CD Pipeline
+
+GitHub OAuth:
+
+Register a GitHub OAuth App.
+
+Implement the OAuth flow to allow users to securely connect their GitHub account. Store the access token securely, encrypted in the database.
+
+Site Creation:
+
+After OAuth, the user can create a new "Site" on the dashboard. They will select a GitHub repository they have access to.
+
+The backend API will use the stored GitHub token to programmatically add a webhook to the selected repository. This webhook will point to an endpoint on our API (e.g., POST /api/hooks/deploy).
+
+Webhook Handler:
+
+The /api/hooks/deploy endpoint will listen for push events from GitHub.
+
+Upon receiving a valid webhook, it will trigger a new deployment process. It should create a Deployment record in the database with a status of "Queued".
+
+Part C: Build Environment & Execution
+
+Build Trigger: When a deployment is triggered, the backend will initiate a build inside a secure Docker container.
+
+Container Execution:
+
+Spin up a new Docker container from a base image (e.g., node:18-bullseye).
+
+Security: Run all commands inside the container as a non-root user.
+
+The container will:
+
+Clone the specific repository and commit from the webhook payload.
+
+Detect the project type and install dependencies (npm install or yarn install).
+
+Run the build command (e.g., npm run build). This command should be configurable by the user but default to common conventions.
+
+Log Streaming:
+
+Capture the stdout and stderr from the build process inside the container.
+
+Stream these logs in real-time from the backend to the user's browser via a WebSocket connection, displaying them on the deployment details page.
+
+Part D: Static Asset Hosting & CDN
+
+Asset Upload:
+
+Upon a successful build, the script inside the Docker container will upload the contents of the build output directory (e.g., /dist, /.next, /build) to an AWS S3 bucket.
+
+Each deployment should be uploaded to a unique, randomly generated path within the S3 bucket to ensure immutability (e.g., s3://your-bucket-name/project-id/deploy-id-xyz/).
+
+CDN Configuration:
+
+An AWS CloudFront distribution will be configured to use the S3 bucket as its origin.
+
+After a successful upload, the backend API will update the Deployment record in the database with the unique S3 path and mark its status as "Success".
+
+The primary domain for the site will be pointed to this new deployment, making the deploy "live" (this is the "atomic" part of the swap).
+
+Part E: Serverless Functions
+
+Detection: During the build process, the system will check for the existence of a specific directory in the user's repository, such as /api or /functions.
+
+Deployment: For each JavaScript/TypeScript file in that directory, the build script will:
+
+Package the function file and its dependencies into a .zip archive.
+
+Use the AWS SDK to upload and create/update an AWS Lambda function.
+
+Routing: Use AWS API Gateway to create a public HTTP endpoint for each Lambda function. The URL structure should be predictable (e.g., https://your-site.replideploy.app/api/function-name).
+
+Part F: Custom Domains & SSL
+
+Domain Management:
+
+Provide a UI in the dashboard for users to add a custom domain name.
+
+The user will be instructed to add a CNAME or A record in their DNS provider's settings, pointing to the RepliDeploy CloudFront distribution.
+
+Automated SSL:
+
+Once DNS propagation is detected, the backend will programmatically use a client like Certbot to interact with Let's Encrypt.
+
+It will perform a DNS-01 challenge to prove ownership of the domain and obtain an SSL certificate.
+
+The obtained certificate will be uploaded to AWS and attached to the CloudFront distribution, enabling HTTPS for the custom domain.
+
+Final Instruction: Based on the comprehensive technical specification document above, please generate the complete file and folder structure, along with the code for each file, to build this "RepliDeploy" platform.
